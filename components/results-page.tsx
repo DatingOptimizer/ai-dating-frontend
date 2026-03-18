@@ -107,15 +107,11 @@ export function ResultsPage({ formData, rewrittenBios, onBack }: ResultsPageProp
           {/* Before Card */}
           <div 
             className="flex-1 bg-[#F5F0E8] rounded-lg p-5 border-2 border-dashed border-pencil/60 relative opacity-85 fade-in-up"
-            style={{ 
-              borderDasharray: "8 4 12 4",
-              animationDelay: "200ms"
-            }}
+            style={{ animationDelay: "200ms" }}
           >
             {/* Score Badge */}
             <div 
               className="absolute -top-3 -right-3 w-12 h-12 rounded-full border-2 border-dashed border-pencil flex items-center justify-center bg-warm-white"
-              style={{ borderDasharray: "6 3" }}
             >
               <span className="font-serif text-lg text-pencil">6/10</span>
             </div>
@@ -137,17 +133,15 @@ export function ResultsPage({ formData, rewrittenBios, onBack }: ResultsPageProp
           {/* After Card */}
           <div 
             className="flex-1 bg-warm-white rounded-lg p-5 border-2 border-dashed border-pencil relative fade-in-up"
-            style={{ 
+            style={{
               transform: "scale(1.02)",
               boxShadow: "0 0 20px rgba(245,213,160,0.3)",
-              borderDasharray: "8 4 12 4",
               animationDelay: "400ms"
             }}
           >
             {/* Score Badge */}
             <div 
               className="absolute -top-3 -right-3 w-12 h-12 rounded-full border-2 border-dashed border-blush flex items-center justify-center bg-warm-white"
-              style={{ borderDasharray: "6 3" }}
             >
               <span className="font-serif text-lg text-blush">9/10</span>
               <StarIcon className="absolute -top-1 -right-1 w-4 h-4 text-golden" />
@@ -172,7 +166,6 @@ export function ResultsPage({ formData, rewrittenBios, onBack }: ResultsPageProp
           <PaperClipIcon className="absolute -top-3 -left-2 w-10 h-10 text-pencil z-10" />
           <div 
             className="bg-warm-white border-2 border-dashed border-pencil rounded-lg shadow-[4px_4px_0px_#E8DFD3] torn-edge pt-6 pb-4 px-4 min-h-[480px]"
-            style={{ borderDasharray: "8 4 12 4" }}
           >
             <div className="flex items-center gap-2 mb-4">
               <NotebookIcon className="w-6 h-6 text-pencil" />
@@ -198,7 +191,6 @@ export function ResultsPage({ formData, rewrittenBios, onBack }: ResultsPageProp
                         : "bg-white text-pencil border-pencil hover:bg-pencil/5"
                       }
                     `}
-                    style={{ borderDasharray: "4 2" }}
                     aria-label={`Copy ${bio.title} bio`}
                   >
                     {copiedBio === index ? "Copied!" : "📋 Copy"}
@@ -214,7 +206,6 @@ export function ResultsPage({ formData, rewrittenBios, onBack }: ResultsPageProp
           <WashiTape className="absolute -top-4 left-1/2 -translate-x-1/2 w-20 h-6 z-10" />
           <div 
             className="bg-warm-white border-2 border-dashed border-pencil rounded-lg shadow-[4px_4px_0px_#E8DFD3] torn-edge pt-8 pb-4 px-4 min-h-[480px]"
-            style={{ borderDasharray: "8 4 12 4" }}
           >
             <div className="flex items-center gap-2 mb-4">
               <CameraIcon className="w-6 h-6 text-pencil" />
@@ -274,7 +265,6 @@ export function ResultsPage({ formData, rewrittenBios, onBack }: ResultsPageProp
           <PushpinIcon className="absolute -top-2 left-4 w-8 h-8 z-10" />
           <div 
             className="bg-warm-white border-2 border-dashed border-pencil rounded-lg shadow-[4px_4px_0px_#E8DFD3] torn-edge pt-6 pb-4 px-4 min-h-[480px]"
-            style={{ borderDasharray: "8 4 12 4" }}
           >
             <div className="flex items-center gap-2 mb-4">
               <SpeechBubbleIcon className="w-6 h-6 text-pencil" />
@@ -293,7 +283,6 @@ export function ResultsPage({ formData, rewrittenBios, onBack }: ResultsPageProp
                       relative ${bgColor} p-3 rounded-xl border border-dashed border-pencil/30
                       ${isLeft ? "mr-4 rounded-bl-none" : "ml-4 rounded-br-none"}
                     `}
-                    style={{ borderDasharray: "6 3" }}
                   >
                     <p className="font-sans text-sm text-pencil pr-14">{starter}</p>
                     <button
@@ -306,7 +295,6 @@ export function ResultsPage({ formData, rewrittenBios, onBack }: ResultsPageProp
                           : "bg-white text-pencil border-pencil hover:bg-pencil/5"
                         }
                       `}
-                      style={{ borderDasharray: "4 2" }}
                       aria-label={`Copy conversation starter ${index + 1}`}
                     >
                       {copiedStarter === index ? "Copied!" : "Copy"}
