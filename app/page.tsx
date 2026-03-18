@@ -6,7 +6,7 @@ import { ResultsPage } from "@/components/results-page"
 import { BackgroundDoodles } from "@/components/background-doodles"
 import { CoffeeStains } from "@/components/coffee-stains"
 
-export type VibeType = "witty" | "warm" | "adventurous" | "chill" | "flirty" | "nerdy"
+export type VibeType = "humorous" | "warm" | "polite" | "chill" | "flirty"
 
 export interface UploadedPhoto {
   id: string
