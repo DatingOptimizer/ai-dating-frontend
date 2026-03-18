@@ -42,11 +42,6 @@ const optimizedBios = [
   }
 ]
 
-const photoRankings = [
-  { rank: 1, tip: "Great smile — perfect as your lead photo!" },
-  { rank: 2, tip: "Good candid shot — shows personality" },
-  { rank: 3, tip: "Nice outdoor photo — try slightly better lighting" },
-]
 
 const conversationStarters = [
   "I see you're into hiking — what trail made you feel most alive?",
@@ -226,45 +221,51 @@ export function ResultsPage({ formData, rewrittenBios, onBack }: ResultsPageProp
               <h2 className="font-serif text-2xl text-pencil">Photo Ranking</h2>
             </div>
             
-            {/* Cascading Polaroids */}
-            <div className="relative h-80 mt-4">
-              {photoRankings.map((item, index) => {
-                const rotations = [-3, 1, -2]
-                const offsets = [0, 90, 180]
-                const isFirst = index === 0
-                const size = isFirst ? 150 : 115
-                
-                return (
-                  <div
-                    key={index}
-                    className={`absolute left-1/2 -translate-x-1/2 bg-white p-2 pb-12 shadow-lg ${isFirst ? "z-30" : index === 1 ? "z-20" : "z-10"}`}
-                    style={{ 
-                      transform: `translateX(-50%) rotate(${rotations[index]}deg)`,
-                      width: `${size}px`,
-                      top: `${offsets[index]}px`
-                    }}
-                  >
-                    <span className="absolute top-2 left-2 font-serif text-2xl text-blush font-bold">
-                      #{item.rank}
-                    </span>
-                    {isFirst && (
-                      <StarIcon className="absolute top-1 right-1 w-8 h-8 text-golden" />
-                    )}
-                    {/* Placeholder colored rectangle with camera icon */}
-                    <div 
-                      className={`w-full aspect-square flex items-center justify-center ${
-                        isFirst ? "bg-blush/30" : index === 1 ? "bg-mint/40" : "bg-lavender/40"
-                      }`}
+            {/* Cascading Polaroids or empty state */}
+            {formData.photos.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-80 gap-3 text-center">
+                <Camera className="w-12 h-12 text-pencil/20" strokeWidth={1.5} />
+                <p className="font-sans text-sm text-muted-text italic">
+                  No photos uploaded
+                </p>
+                <p className="font-mono text-xs text-muted-text/70">
+                  Go back and add photos to get your ranking!
+                </p>
+              </div>
+            ) : (
+              <div className="relative h-80 mt-4">
+                {formData.photos.slice(0, 3).map((photo, index) => {
+                  const rotations = [-3, 1, -2]
+                  const offsets = [0, 90, 180]
+                  const isFirst = index === 0
+                  const size = isFirst ? 150 : 115
+
+                  return (
+                    <div
+                      key={photo.id}
+                      className={`absolute left-1/2 -translate-x-1/2 bg-white p-2 pb-12 shadow-lg ${isFirst ? "z-30" : index === 1 ? "z-20" : "z-10"}`}
+                      style={{
+                        transform: `translateX(-50%) rotate(${rotations[index]}deg)`,
+                        width: `${size}px`,
+                        top: `${offsets[index]}px`
+                      }}
                     >
-                      <Camera className="w-10 h-10 text-pencil/40" strokeWidth={1.5} />
+                      <span className="absolute top-2 left-2 font-serif text-2xl text-blush font-bold">
+                        #{index + 1}
+                      </span>
+                      {isFirst && (
+                        <StarIcon className="absolute top-1 right-1 w-8 h-8 text-golden" />
+                      )}
+                      <img
+                        src={photo.url}
+                        alt={photo.name}
+                        className="w-full aspect-square object-cover"
+                      />
                     </div>
-                    <p className="absolute bottom-2 left-2 right-2 font-sans text-xs text-pencil italic leading-tight">
-                      {item.tip}
-                    </p>
-                  </div>
-                )
-              })}
-            </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
 
