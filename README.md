@@ -4,6 +4,10 @@
 
 Your dating profile, polished by AI: in seconds.
 
+**Live URLs:**
+- Frontend: https://dating-optimizer.netlify.app
+- Backend API: https://dating-optimizer-backend.onrender.com
+
 ## Overview
 
 ProfileGlow helps users optimize their dating profiles using AI. Paste your bio, upload your best photos, pick a vibe, and get AI-powered bio rewrites, photo rankings, and personalized conversation starters.
@@ -70,7 +74,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
 If the backend is deployed remotely, replace with the remote URL:
 
 ```env
-NEXT_PUBLIC_API_URL=https://your-backend-url.herokuapp.com
+NEXT_PUBLIC_API_URL=https://dating-optimizer-backend.onrender.com
 ```
 
 ### 4. Start the development server
@@ -178,19 +182,21 @@ All API calls include a 15-second timeout, error handling via toast notification
 
 ## Deployment
 
-### Netlify (planned)
+### Netlify
+
+Deployed at: https://dating-optimizer.netlify.app
 
 1. Connect this GitHub repository in the Netlify dashboard
 2. Set build command: `npm run build`
 3. Set publish directory: `.next`
 4. Add environment variables:
-   - `NEXT_PUBLIC_API_URL` = your backend URL
+   - `NEXT_PUBLIC_API_URL` = `https://dating-optimizer-backend.onrender.com`
    - `NEXT_PUBLIC_SUPABASE_URL` = your Supabase project URL
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = your Supabase anon key
 
 ## Related Repositories
 
-- **Backend:** [KaichenQu/Dating-Backend](https://github.com/KaichenQu/Dating-Backend): Spring Boot + Claude API + Supabase PostgreSQL
+- **Backend:** [DatingOptimizer/Dating-Backend](https://github.com/DatingOptimizer/Dating-Backend): Spring Boot + Claude API + Supabase PostgreSQL
 
 ## Team
 
