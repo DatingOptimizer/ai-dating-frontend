@@ -36,6 +36,14 @@ export interface GenerateOpenersResponse {
   tone: string
 }
 
+import { supabase } from '@/lib/supabase'
+
+async function getAuthHeader(): Promise<Record<string, string>> {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.access_token) return {}
+  return { Authorization: `Bearer ${session.access_token}` }
+}
+
 export class ApiError extends Error {
   readonly status: number
   readonly url: string
@@ -93,12 +101,14 @@ async function requestJson<TResponse>(
 ): Promise<TResponse> {
   const url = withBaseUrl(path)
 
+  const authHeader = await getAuthHeader()
   let res: Response
   try {
     res = await fetchWithTimeout(url, {
       ...init,
       headers: {
         'Content-Type': 'application/json',
+        ...authHeader,
         ...(init.headers || {}),
       },
       body: init.body === undefined ? undefined : JSON.stringify(init.body),
@@ -130,9 +140,10 @@ async function requestFormData<TResponse>(
 ): Promise<TResponse> {
   const url = withBaseUrl(path)
 
+  const authHeader = await getAuthHeader()
   let res: Response
   try {
-    res = await fetchWithTimeout(url, { ...init, body: formData })
+    res = await fetchWithTimeout(url, { ...init, body: formData, headers: authHeader })
   } catch (err) {
     const message =
       err instanceof DOMException && err.name === 'AbortError'
