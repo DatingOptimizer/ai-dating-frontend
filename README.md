@@ -83,12 +83,47 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Available Scripts
 
-| Command         | Description                |
-| --------------- | -------------------------- |
-| `npm run dev`   | Start development server   |
-| `npm run build` | Create production build    |
-| `npm run start` | Start production server    |
-| `npm run lint`  | Run ESLint                 |
+| Command              | Description                        |
+| -------------------- | ---------------------------------- |
+| `npm run dev`        | Start development server           |
+| `npm run build`      | Create production build            |
+| `npm run start`      | Start production server            |
+| `npm run lint`       | Run ESLint                         |
+| `npm run test`       | Run tests in watch mode            |
+| `npm run test:run`   | Run tests once (CI mode)           |
+
+## Testing
+
+Tests are written with [Vitest](https://vitest.dev/) and [React Testing Library](https://testing-library.com/).
+
+### Run tests
+
+```bash
+# Watch mode (re-runs on file changes)
+npm run test
+
+# Run once
+npm run test:run
+```
+
+### Coverage
+
+```bash
+npx vitest run --coverage
+```
+
+Coverage results are printed in the terminal and saved to `coverage/` as an HTML report. Open `coverage/index.html` in your browser for a detailed breakdown.
+
+### What is tested
+
+| Area | File |
+| ---- | ---- |
+| `cn()` utility | `__tests__/lib/utils.test.ts` |
+| API service layer (all 8 endpoints, error handling, timeouts) | `__tests__/lib/api.test.ts` |
+| `useIsMobile` hook | `__tests__/hooks/use-mobile.test.ts` |
+| Auth page (login, signup, errors, redirect) | `__tests__/components/auth-page.test.tsx` |
+| Upload page (bio input, vibe selector, photo validation, submit) | `__tests__/components/upload-page.test.tsx` |
+| History panel (fetch, delete, empty states, collapse) | `__tests__/components/history-panel.test.tsx` |
 
 ## Project Structure
 
