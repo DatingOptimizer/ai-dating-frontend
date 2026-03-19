@@ -7,6 +7,7 @@ import { UploadPage } from "@/components/upload-page"
 import { ResultsPage } from "@/components/results-page"
 import { BackgroundDoodles } from "@/components/background-doodles"
 import { CoffeeStains } from "@/components/coffee-stains"
+import type { RankedPhoto } from "@/lib/api"
 
 export type VibeType = "humorous" | "warm" | "polite" | "chill" | "flirty"
 
@@ -14,6 +15,7 @@ export interface UploadedPhoto {
   id: string
   url: string
   name: string
+  file: File
 }
 
 export interface FormData {
@@ -28,6 +30,7 @@ export default function ProfileGlow() {
   const [currentPage, setCurrentPage] = useState<"upload" | "results">("upload")
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [rewrittenBios, setRewrittenBios] = useState<string[]>([])
+  const [rankedPhotos, setRankedPhotos] = useState<RankedPhoto[]>([])
   const [formData, setFormData] = useState<FormData>({
     bio: "",
     vibe: "warm",
@@ -43,8 +46,9 @@ export default function ProfileGlow() {
 
   if (!authChecked) return null
 
-  const handleSubmit = (bios: string[]) => {
+  const handleSubmit = (bios: string[], ranked: RankedPhoto[]) => {
     setRewrittenBios(bios)
+    setRankedPhotos(ranked)
     setIsTransitioning(true)
     setTimeout(() => {
       setCurrentPage("results")
@@ -57,6 +61,7 @@ export default function ProfileGlow() {
     setTimeout(() => {
       setCurrentPage("upload")
       setRewrittenBios([])
+      setRankedPhotos([])
       setIsTransitioning(false)
     }, 600)
   }
@@ -86,6 +91,7 @@ export default function ProfileGlow() {
             <ResultsPage
               formData={formData}
               rewrittenBios={rewrittenBios}
+              rankedPhotos={rankedPhotos}
               onBack={handleBack}
               onLogout={handleLogout}
             />

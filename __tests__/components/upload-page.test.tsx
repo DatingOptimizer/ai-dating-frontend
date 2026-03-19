@@ -13,8 +13,10 @@ vi.mock('@/components/icons/quill-icon', () => ({ QuillIcon: () => null }))
 vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn() } }))
 
 const mockRewriteBio = vi.fn()
+const mockRankPhotos = vi.fn()
 vi.mock('@/lib/api', () => ({
   rewriteBio: (...args: unknown[]) => mockRewriteBio(...args),
+  rankPhotos: (...args: unknown[]) => mockRankPhotos(...args),
 }))
 
 function makeFormData(overrides: Partial<FormData> = {}): FormData {
@@ -78,6 +80,11 @@ describe('UploadPage — vibe selector', () => {
 })
 
 describe('UploadPage — submit button', () => {
+  beforeEach(() => {
+    mockRewriteBio.mockClear()
+    mockRankPhotos.mockClear()
+  })
+
   it('is disabled when bio is empty', () => {
     render(<UploadPage {...makeProps(makeFormData({ bio: '' }))} />)
     expect(screen.getByRole('button', { name: /optimize my profile/i })).toBeDisabled()
@@ -88,14 +95,50 @@ describe('UploadPage — submit button', () => {
     expect(screen.getByRole('button', { name: /optimize my profile/i })).toBeEnabled()
   })
 
-  it('calls onSubmit with rewritten bios on success', async () => {
+  it('calls onSubmit with rewritten bios and empty ranked photos when no photos', async () => {
     const onSubmit = vi.fn()
     mockRewriteBio.mockResolvedValue({ rewrittenBios: ['bio A', 'bio B'], originalBio: 'old', tone: 'casual' })
+    mockRankPhotos.mockResolvedValue({ rankedPhotos: [] })
 
     render(<UploadPage {...makeProps(makeFormData({ bio: 'I love coffee' }), { onSubmit })} />)
     await userEvent.click(screen.getByRole('button', { name: /optimize my profile/i }))
 
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(['bio A', 'bio B']))
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith(['bio A', 'bio B'], []))
+  })
+
+  it('calls rankPhotos and passes results to onSubmit when 2+ photos uploaded', async () => {
+    const onSubmit = vi.fn()
+    const rankedPhotos = [
+      { photoName: 'a.jpg', rank: 1, score: 90, reasoning: 'Great', base64Image: null },
+      { photoName: 'b.jpg', rank: 2, score: 70, reasoning: 'Good', base64Image: null },
+    ]
+    mockRewriteBio.mockResolvedValue({ rewrittenBios: ['bio A'], originalBio: 'old', tone: 'casual' })
+    mockRankPhotos.mockResolvedValue({ rankedPhotos })
+
+    const photos = [
+      { id: '1', url: 'blob:1', name: 'a.jpg', file: new File([''], 'a.jpg', { type: 'image/jpeg' }) },
+      { id: '2', url: 'blob:2', name: 'b.jpg', file: new File([''], 'b.jpg', { type: 'image/jpeg' }) },
+    ]
+    render(<UploadPage {...makeProps(makeFormData({ bio: 'I love coffee', photos }), { onSubmit })} />)
+    await userEvent.click(screen.getByRole('button', { name: /optimize my profile/i }))
+
+    await waitFor(() => {
+      expect(mockRankPhotos).toHaveBeenCalled()
+      expect(onSubmit).toHaveBeenCalledWith(['bio A'], rankedPhotos)
+    })
+  })
+
+  it('skips rankPhotos when fewer than 2 photos uploaded', async () => {
+    mockRewriteBio.mockResolvedValue({ rewrittenBios: ['bio A'], originalBio: 'old', tone: 'casual' })
+    mockRankPhotos.mockResolvedValue({ rankedPhotos: [] })
+
+    const photos = [
+      { id: '1', url: 'blob:1', name: 'a.jpg', file: new File([''], 'a.jpg', { type: 'image/jpeg' }) },
+    ]
+    render(<UploadPage {...makeProps(makeFormData({ bio: 'I love coffee', photos }))} />)
+    await userEvent.click(screen.getByRole('button', { name: /optimize my profile/i }))
+
+    await waitFor(() => expect(mockRankPhotos).not.toHaveBeenCalled())
   })
 
   it('shows toast error on API failure', async () => {
@@ -170,6 +213,7 @@ describe('UploadPage — photo upload', () => {
       id: `p${i}`,
       url: `blob:${i}`,
       name: `photo${i}.jpg`,
+      file: new File([''], `photo${i}.jpg`, { type: 'image/jpeg' }),
     }))
     const setFormData = vi.fn()
     render(<UploadPage {...makeProps(makeFormData({ photos: existing }), { setFormData })} />)

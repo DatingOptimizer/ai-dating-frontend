@@ -7,6 +7,7 @@ import {
   saveBio,
   saveStarter,
   type GenerateOpenersTone,
+  type RankedPhoto,
 } from "@/lib/api"
 import { FallingCelebration } from "@/components/falling-celebration"
 import { BackArrowIcon } from "@/components/icons/back-arrow-icon"
@@ -23,6 +24,7 @@ import { Camera, Sparkles, Loader2, ChevronLeft, ChevronRight, BookMarked } from
 interface ResultsPageProps {
   formData: FormData
   rewrittenBios: string[]
+  rankedPhotos: RankedPhoto[]
   onBack: () => void
   onLogout: () => void
 }
@@ -46,7 +48,7 @@ function vibeToTone(vibe: VibeType): GenerateOpenersTone {
   }
 }
 
-export function ResultsPage({ formData, rewrittenBios, onBack, onLogout }: ResultsPageProps) {
+export function ResultsPage({ formData, rewrittenBios, rankedPhotos, onBack, onLogout }: ResultsPageProps) {
   const [showCelebration, setShowCelebration] = useState(true)
   const [activeTab, setActiveTab] = useState<Tab>("glowup")
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -162,7 +164,7 @@ export function ResultsPage({ formData, rewrittenBios, onBack, onLogout }: Resul
             />
           )}
           {activeTab === "photos" && (
-            <PhotosTab formData={formData} />
+            <PhotosTab formData={formData} rankedPhotos={rankedPhotos} />
           )}
           {activeTab === "starters" && (
             <StartersTab
@@ -320,7 +322,9 @@ function GlowUpTab({
 }
 
 /* ── Photos Tab ── */
-function PhotosTab({ formData }: { formData: FormData }) {
+function PhotosTab({ formData, rankedPhotos }: { formData: FormData; rankedPhotos: RankedPhoto[] }) {
+  const photoUrlMap = Object.fromEntries(formData.photos.map(p => [p.name, p.url]))
+
   return (
     <div className="max-w-2xl mx-auto fade-in-up">
       <div className="flex items-center gap-2 mb-6">
@@ -334,32 +338,55 @@ function PhotosTab({ formData }: { formData: FormData }) {
           <p className="font-sans text-sm text-muted-text italic">No photos uploaded</p>
           <p className="font-mono text-xs text-muted-text/70">Go back and add photos to get your ranking!</p>
         </div>
+      ) : rankedPhotos.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-60 gap-3 text-center">
+          <Camera className="w-12 h-12 text-pencil/20" strokeWidth={1.5} />
+          <p className="font-sans text-sm text-muted-text italic">Upload at least 2 photos to get a ranking</p>
+        </div>
       ) : (
-        <div className="relative h-96 mt-4">
-          {formData.photos.slice(0, 3).map((photo, index) => {
-            const rotations = [-3, 1, -2]
-            const offsets = [0, 100, 200]
-            const isFirst = index === 0
-            const size = isFirst ? 160 : 120
-
-            return (
-              <div
-                key={photo.id}
-                className={`absolute left-1/2 bg-white p-2 pb-12 shadow-lg ${isFirst ? "z-30" : index === 1 ? "z-20" : "z-10"}`}
-                style={{
-                  transform: `translateX(-50%) rotate(${rotations[index]}deg)`,
-                  width: `${size}px`,
-                  top: `${offsets[index]}px`,
-                }}
-              >
-                <span className="absolute top-2 left-2 font-serif text-2xl text-blush font-bold">
-                  #{index + 1}
+        <div className="space-y-4">
+          {rankedPhotos.map((photo, index) => (
+            <div
+              key={photo.photoName}
+              className="flex gap-4 bg-warm-white rounded-xl border-2 border-dashed border-pencil/40 p-4"
+              style={{ transform: index % 2 === 0 ? "rotate(-0.3deg)" : "rotate(0.3deg)" }}
+            >
+              {/* Rank badge */}
+              <div className="flex-shrink-0 flex flex-col items-center gap-1">
+                <span className="font-serif text-3xl font-bold text-blush leading-none">
+                  #{photo.rank}
                 </span>
-                {isFirst && <StarIcon className="absolute top-1 right-1 w-8 h-8 text-golden" />}
-                <img src={photo.url} alt={photo.name} className="w-full aspect-square object-cover" />
+                {index === 0 && <StarIcon className="w-5 h-5 text-golden" />}
               </div>
-            )
-          })}
+
+              {/* Photo thumbnail */}
+              {photoUrlMap[photo.photoName] && (
+                <img
+                  src={photoUrlMap[photo.photoName]}
+                  alt={photo.photoName}
+                  className="w-20 h-20 object-cover rounded-lg flex-shrink-0 shadow-md"
+                />
+              )}
+
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-mono text-xs text-muted-text truncate">{photo.photoName}</span>
+                  <span className="ml-auto font-mono text-sm font-bold text-pencil flex-shrink-0">
+                    {photo.score.toFixed(0)}/100
+                  </span>
+                </div>
+                {/* Score bar */}
+                <div className="w-full bg-pencil/10 rounded-full h-1.5 mb-2">
+                  <div
+                    className="bg-blush h-1.5 rounded-full transition-all"
+                    style={{ width: `${photo.score}%` }}
+                  />
+                </div>
+                <p className="font-sans text-sm text-pencil/80 leading-relaxed">{photo.reasoning}</p>
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

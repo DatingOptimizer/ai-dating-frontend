@@ -8,7 +8,7 @@ import { SquigglyUnderline } from "@/components/icons/squiggly-underline"
 import { CameraIcon } from "@/components/icons/camera-icon"
 import { QuillIcon } from "@/components/icons/quill-icon"
 import { toast } from "sonner"
-import { rewriteBio, type RewriteBioTone } from "@/lib/api"
+import { rewriteBio, rankPhotos, type RewriteBioTone, type RankedPhoto } from "@/lib/api"
 import {
   PenLine,
   Sparkles,
@@ -26,7 +26,7 @@ import {
 interface UploadPageProps {
   formData: FormData
   setFormData: React.Dispatch<React.SetStateAction<FormData>>
-  onSubmit: (rewrittenBios: string[]) => void
+  onSubmit: (rewrittenBios: string[], rankedPhotos: RankedPhoto[]) => void
   onLogout: () => void
 }
 
@@ -65,8 +65,14 @@ export function UploadPage({ formData, setFormData, onSubmit, onLogout }: Upload
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
-      const res = await rewriteBio({ bio: formData.bio, tone: vibeToTone(formData.vibe) })
-      onSubmit(res.rewrittenBios)
+      const files = formData.photos.map(p => p.file)
+      const [bioRes, rankRes] = await Promise.all([
+        rewriteBio({ bio: formData.bio, tone: vibeToTone(formData.vibe) }),
+        files.length >= 2
+          ? rankPhotos(files)
+          : Promise.resolve({ rankedPhotos: [] }),
+      ])
+      onSubmit(bioRes.rewrittenBios, rankRes.rankedPhotos)
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong"
       toast.error(message)
@@ -84,7 +90,8 @@ export function UploadPage({ formData, setFormData, onSubmit, onLogout }: Upload
         newPhotos.push({
           id: `photo-${Date.now()}-${index}`,
           url: URL.createObjectURL(file),
-          name: file.name
+          name: file.name,
+          file,
         })
       }
     })
@@ -132,7 +139,7 @@ export function UploadPage({ formData, setFormData, onSubmit, onLogout }: Upload
       {/* Subheader */}
       <div className="text-center mb-10">
         <p className="font-sans text-lg text-muted-text">
-          Your dating profile, polished by AI — in seconds.
+          Your dating profile, polished by AI, in seconds.
         </p>
         <div className="mt-6 flex justify-center">
           <PenLineWithSparkle />

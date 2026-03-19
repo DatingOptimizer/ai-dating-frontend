@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { ApiError, rewriteBio, saveBio, deleteBio, saveStarter, deleteStarter, getHistory, generateOpeners } from '@/lib/api'
+import { ApiError, rewriteBio, rankPhotos, saveBio, deleteBio, saveStarter, deleteStarter, getHistory, generateOpeners } from '@/lib/api'
 
 // Mock supabase to return a fake token
 vi.mock('@/lib/supabase', () => ({
@@ -159,6 +159,38 @@ describe('API functions (fetch mocked)', () => {
     await expect(rewriteBio({ bio: 'test', tone: 'casual' })).rejects.toMatchObject({
       status: 0,
     })
+  })
+
+  it('rankPhotos sends POST with multipart/form-data to rank-photos endpoint', async () => {
+    const mockResponse = {
+      rankedPhotos: [
+        { photoName: 'a.jpg', rank: 1, score: 90, reasoning: 'Great shot', base64Image: null },
+        { photoName: 'b.jpg', rank: 2, score: 70, reasoning: 'Decent', base64Image: null },
+      ]
+    }
+    mockFetchOk(mockResponse)
+
+    const files = [
+      new File(['img'], 'a.jpg', { type: 'image/jpeg' }),
+      new File(['img'], 'b.jpg', { type: 'image/jpeg' }),
+    ]
+    const result = await rankPhotos(files)
+
+    expect(result).toEqual(mockResponse)
+    const [url, init] = vi.mocked(fetch).mock.calls[0]
+    expect(String(url)).toContain('/api/profile/rank-photos')
+    expect(init?.method).toBe('POST')
+    // Should use FormData, not JSON
+    expect(init?.body).toBeInstanceOf(FormData)
+    expect(init?.headers).not.toHaveProperty('Content-Type') // FormData sets its own boundary
+  })
+
+  it('rankPhotos throws ApiError on failure', async () => {
+    mockFetchError(413, { message: 'File too large' })
+    const files = [new File(['img'], 'a.jpg', { type: 'image/jpeg' })]
+
+    await expect(rankPhotos(files)).rejects.toBeInstanceOf(ApiError)
+    await expect(rankPhotos(files)).rejects.toMatchObject({ status: 413 })
   })
 
   it('throws ApiError with timeout message on AbortError', async () => {
