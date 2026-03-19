@@ -164,6 +164,37 @@ async function requestFormData<TResponse>(
   }
 }
 
+export interface SavedItem {
+  id: string
+  content: string
+  createdAt: string
+}
+
+export interface HistoryResponse {
+  savedBios: SavedItem[]
+  savedStarters: SavedItem[]
+}
+
+export async function getHistory(): Promise<HistoryResponse> {
+  return await requestJson<HistoryResponse>('/api/profile/history')
+}
+
+export async function saveBio(content: string): Promise<SavedItem> {
+  return await requestJson<SavedItem>('/api/profile/history/bio', { method: 'POST', body: { content } })
+}
+
+export async function deleteBio(id: string): Promise<void> {
+  await requestJson<void>(`/api/profile/history/bio/${id}`, { method: 'DELETE' })
+}
+
+export async function saveStarter(content: string): Promise<SavedItem> {
+  return await requestJson<SavedItem>('/api/profile/history/starter', { method: 'POST', body: { content } })
+}
+
+export async function deleteStarter(id: string): Promise<void> {
+  await requestJson<void>(`/api/profile/history/starter/${id}`, { method: 'DELETE' })
+}
+
 export async function rewriteBio(req: RewriteBioRequest): Promise<RewriteBioResponse> {
   return await requestJson<RewriteBioResponse>('/api/profile/rewrite-bio', {
     method: 'POST',
