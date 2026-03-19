@@ -1,8 +1,8 @@
-# ProfileGlow ✨ — AI Dating Profile Optimizer (Frontend)
+# ProfileGlow ✨ AI Dating Profile Optimizer (Frontend)
 
 **CS 5500 Group 4** | Northeastern University
 
-Your dating profile, polished by AI — in seconds.
+Your dating profile, polished by AI: in seconds.
 
 ## Overview
 
@@ -10,10 +10,11 @@ ProfileGlow helps users optimize their dating profiles using AI. Paste your bio,
 
 ## Features
 
-- **Bio Rewriting** — Paste your current bio and pick a vibe (Witty, Warm, Adventurous, Chill, Flirty, Nerdy). The AI generates 3 optimized versions (The Charmer, The Storyteller, The Bold One) with one-click copy.
-- **Photo Ranking** — Upload 1–5 photos (JPEG/PNG, max 10 MB each). The AI ranks them from most to least appealing with scores and reasoning.
-- **Conversation Starters** — Get 5 personalized opening lines based on your bio content, each with a copy button.
-- **Responsive Design** — Fully functional on desktop and mobile.
+- **Bio Rewriting** : Paste your current bio and pick a vibe (Humorous, Warm, Polite, Chill, Flirty). The AI generates 3 optimized versions (The Charmer, The Storyteller, The Bold One) with one-click copy.
+- **Before/After Diff**: Visual word-level comparison of your original vs. rewritten bio: removed words are struck through, new words are highlighted in gold.
+- **Photo Ranking**: Upload 1–5 photos (JPEG/PNG, max 10 MB each). The AI ranks them from most to least appealing with scores and reasoning.
+- **Conversation Starters**: AI-generated personalized opening lines based on your bio and chosen vibe, each with a copy button.
+- **Responsive Design**: Fully functional on desktop and mobile.
 
 ## Tech Stack
 
@@ -31,7 +32,7 @@ ProfileGlow helps users optimize their dating profiles using AI. Paste your bio,
 
 - **Node.js** 18+ (recommended: 20+)
 - **npm** 9+ or **pnpm** 8+
-- Backend API running — see [Dating-Backend](https://github.com/KaichenQu/Dating-Backend)
+- Backend API running: see [Dating-Backend](https://github.com/KaichenQu/Dating-Backend)
 
 ## Getting Started
 
@@ -135,7 +136,7 @@ All API calls include a 15-second timeout and error handling via toast notificat
 
 ## Related Repositories
 
-- **Backend:** [KaichenQu/Dating-Backend](https://github.com/KaichenQu/Dating-Backend) — Spring Boot + Claude API + MongoDB
+- **Backend:** [KaichenQu/Dating-Backend](https://github.com/KaichenQu/Dating-Backend): Spring Boot + Claude API + MongoDB
 
 ## Team
 
@@ -147,4 +148,4 @@ All API calls include a 15-second timeout and error handling via toast notificat
 
 ## License
 
-MIT License — CS 5500 Academic Project
+MIT License: CS 5500 Academic Project
