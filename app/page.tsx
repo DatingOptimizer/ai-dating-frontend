@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase"
 import { UploadPage } from "@/components/upload-page"
 import { ResultsPage } from "@/components/results-page"
 import { BackgroundDoodles } from "@/components/background-doodles"
@@ -21,6 +23,8 @@ export interface FormData {
 }
 
 export default function ProfileGlow() {
+  const router = useRouter()
+  const [authChecked, setAuthChecked] = useState(false)
   const [currentPage, setCurrentPage] = useState<"upload" | "results">("upload")
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [rewrittenBios, setRewrittenBios] = useState<string[]>([])
@@ -29,6 +33,15 @@ export default function ProfileGlow() {
     vibe: "warm",
     photos: []
   })
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) router.replace("/auth")
+      else setAuthChecked(true)
+    })
+  }, [router])
+
+  if (!authChecked) return null
 
   const handleSubmit = (bios: string[]) => {
     setRewrittenBios(bios)
