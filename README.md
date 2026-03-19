@@ -15,6 +15,8 @@ ProfileGlow helps users optimize their dating profiles using AI. Paste your bio,
 - **Before/After Diff**: Visual word-level comparison of your original vs. rewritten bio: removed words are struck through, new words are highlighted in gold.
 - **Photo Ranking**: Upload 1–5 photos (JPEG/PNG, max 10 MB each). The AI ranks them from most to least appealing with scores and reasoning.
 - **Conversation Starters**: AI-generated personalized opening lines based on your bio and chosen vibe, each with a copy button.
+- **Save & History**: Save your favourite bios and conversation starters to your account. View and delete them any time from the My Saves / History tab.
+- **Collapsible Sidebar**: Navigation sidebar that collapses to emoji-only icons to give more space to content.
 - **Responsive Design**: Fully functional on desktop and mobile.
 
 ## Tech Stack
@@ -102,8 +104,10 @@ ai-dating-frontend/
 ├── components/
 │   ├── icons/                  # Custom icon components
 │   ├── ui/                     # shadcn/ui primitives (Button, Card, Dialog, etc.)
-│   ├── upload-page.tsx         # Bio input, vibe selector, photo upload
-│   ├── results-page.tsx        # Optimized bios, photo ranking, conversation starters
+│   ├── app-sidebar.tsx         # Collapsible sidebar with tab navigation and logout
+│   ├── history-panel.tsx       # Saved bios and starters panel with delete support
+│   ├── upload-page.tsx         # Bio input, vibe selector, photo upload, My Saves tab
+│   ├── results-page.tsx        # Optimized bios, photo ranking, starters, history tab
 │   ├── background-doodles.tsx  # Decorative background elements
 │   ├── coffee-stains.tsx       # Decorative stain effects
 │   ├── falling-celebration.tsx # Celebration animation on results page
@@ -122,13 +126,18 @@ ai-dating-frontend/
 
 ## API Integration
 
-The frontend connects to a Spring Boot backend via three endpoints:
+The frontend connects to a Spring Boot backend via the following endpoints:
 
-| Endpoint                        | Method | Content-Type        | Description                |
-| ------------------------------- | ------ | ------------------- | -------------------------- |
-| `/api/profile/rewrite-bio`      | POST   | application/json    | Rewrite bio with AI        |
-| `/api/profile/rank-photos`      | POST   | multipart/form-data | Rank uploaded photos       |
-| `/api/profile/generate-openers` | POST   | application/json    | Generate conversation starters |
+| Endpoint                            | Method | Content-Type        | Description                        |
+| ----------------------------------- | ------ | ------------------- | ---------------------------------- |
+| `/api/profile/rewrite-bio`          | POST   | application/json    | Rewrite bio with AI                |
+| `/api/profile/rank-photos`          | POST   | multipart/form-data | Rank uploaded photos               |
+| `/api/profile/generate-openers`     | POST   | application/json    | Generate conversation starters     |
+| `/api/profile/history`              | GET    | —                   | Fetch saved bios and starters      |
+| `/api/profile/history/bio`          | POST   | application/json    | Save a bio                         |
+| `/api/profile/history/bio/:id`      | DELETE | —                   | Delete a saved bio                 |
+| `/api/profile/history/starter`      | POST   | application/json    | Save a conversation starter        |
+| `/api/profile/history/starter/:id`  | DELETE | —                   | Delete a saved starter             |
 
 All API calls include a 15-second timeout, error handling via toast notifications, and automatically attach the Supabase JWT as `Authorization: Bearer <token>`. See [`API_DOCS.md`](./API_DOCS.md) for detailed request/response formats.
 
