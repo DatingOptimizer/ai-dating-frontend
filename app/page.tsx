@@ -61,11 +61,23 @@ export default function ProfileGlow() {
     }, 600)
   }
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.replace("/auth")
+  }
+
   return (
     <main className="min-h-screen bg-cream paper-texture paper-crease relative overflow-hidden">
       <CoffeeStains />
       <BackgroundDoodles />
-      
+
+      <button
+        onClick={handleLogout}
+        className="absolute top-4 right-4 z-20 text-sm text-gray-500 hover:text-gray-800 underline"
+      >
+        Log out
+      </button>
+
       <div className="relative z-10">
         {currentPage === "upload" ? (
           <div className={isTransitioning ? "page-flip-out" : ""}>
