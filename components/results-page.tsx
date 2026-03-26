@@ -19,7 +19,7 @@ import { PaperClipIcon } from "@/components/icons/paper-clip-icon"
 import { AppSidebar } from "@/components/app-sidebar"
 import { HistoryPanel } from "@/components/history-panel"
 import { toast } from "sonner"
-import { Camera, Sparkles, Loader2, ChevronLeft, ChevronRight, BookMarked } from "lucide-react"
+import { Camera, Sparkles, Loader2, ChevronLeft, ChevronRight, BookMarked, Copy, Check } from "lucide-react"
 
 interface ResultsPageProps {
   formData: FormData
@@ -203,7 +203,14 @@ function GlowUpTab({
   justSavedBio: number | null
   onSaveBio: (i: number) => void
 }) {
+  const [copiedBioIndex, setCopiedBioIndex] = useState<number | null>(null)
   const currentBio = optimizedBiosToShow[currentBioIndex]
+
+  const handleCopyBio = (index: number) => {
+    navigator.clipboard.writeText(optimizedBiosToShow[index].text)
+    setCopiedBioIndex(index)
+    setTimeout(() => setCopiedBioIndex(null), 1500)
+  }
 
   return (
     <div className="max-w-3xl mx-auto space-y-8 fade-in-up">
@@ -281,10 +288,21 @@ function GlowUpTab({
                 </button>
               </div>
 
+              <div className="flex items-center gap-3">
+              <button
+                onClick={() => handleCopyBio(currentBioIndex)}
+                className="flex items-center gap-2 px-4 py-2 h-9 rounded-full text-sm font-sans border border-dashed bg-white text-pencil border-pencil hover:bg-pencil/5 transition-all"
+              >
+                {copiedBioIndex === currentBioIndex ? (
+                  <><Check className="w-4 h-4 text-mint" /><span>Copied!</span></>
+                ) : (
+                  <><Copy className="w-4 h-4" /><span>Copy</span></>
+                )}
+              </button>
               <button
                 onClick={() => onSaveBio(currentBioIndex)}
                 disabled={savingBio === currentBioIndex || savedBioIndices.has(currentBioIndex)}
-                className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-sans border border-dashed transition-all ${
+                className={`relative flex items-center gap-2 px-4 py-2 h-9 rounded-full text-sm font-sans border border-dashed transition-all ${
                   savedBioIndices.has(currentBioIndex)
                     ? "bg-mint text-pencil border-mint"
                     : "bg-white text-pencil border-pencil hover:bg-pencil/5"
@@ -300,6 +318,7 @@ function GlowUpTab({
                   </>
                 )}
               </button>
+              </div>
             </div>
 
             {/* Dots */}
@@ -409,6 +428,14 @@ function StartersTab({
   justSavedStarter: number | null
   onSaveStarter: (i: number) => void
 }) {
+  const [copiedStarterIndex, setCopiedStarterIndex] = useState<number | null>(null)
+
+  const handleCopyStarter = (index: number) => {
+    navigator.clipboard.writeText(starters[index])
+    setCopiedStarterIndex(index)
+    setTimeout(() => setCopiedStarterIndex(null), 1500)
+  }
+
   return (
     <div className="max-w-2xl mx-auto fade-in-up">
       <div className="flex items-center gap-2 mb-6">
@@ -436,11 +463,21 @@ function StartersTab({
                   isLeft ? "mr-8 rounded-bl-none" : "ml-8 rounded-br-none bg-[#E8F5ED]"
                 }`}
               >
-                <p className="font-sans text-sm text-pencil pr-20">{starter}</p>
+                <p className="font-sans text-sm text-pencil pr-32">{starter}</p>
+                <button
+                  onClick={() => handleCopyStarter(index)}
+                  className="absolute bottom-2 right-20 flex items-center gap-1 px-2 h-7 rounded-full text-xs font-sans border border-dashed bg-white text-pencil border-pencil hover:bg-pencil/5 transition-all"
+                >
+                  {copiedStarterIndex === index ? (
+                    <Check className="w-3 h-3 text-mint" />
+                  ) : (
+                    <Copy className="w-3 h-3" />
+                  )}
+                </button>
                 <button
                   onClick={() => onSaveStarter(index)}
                   disabled={savingStarter === index || savedStarterIndices.has(index)}
-                  className={`absolute bottom-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-sans border border-dashed transition-all ${
+                  className={`absolute bottom-2 right-2 flex items-center gap-1 px-2 h-7 rounded-full text-xs font-sans border border-dashed transition-all ${
                     savedStarterIndices.has(index)
                       ? "bg-mint text-pencil border-mint"
                       : "bg-white text-pencil border-pencil hover:bg-pencil/5"
