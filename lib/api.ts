@@ -61,6 +61,7 @@ export class ApiError extends Error {
 const DEFAULT_BASE_URL = 'http://localhost:8080'
 const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || DEFAULT_BASE_URL).replace(/\/+$/, '')
 const TIMEOUT_MS = 15_000
+const PHOTO_TIMEOUT_MS = 90_000
 
 function withBaseUrl(path: string) {
   if (!path.startsWith('/')) return `${BASE_URL}/${path}`
@@ -84,9 +85,9 @@ async function readBodySafely(res: Response): Promise<unknown> {
   }
 }
 
-async function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+async function fetchWithTimeout(input: RequestInfo | URL, init?: RequestInit, timeoutMs = TIMEOUT_MS): Promise<Response> {
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS)
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
   try {
     return await fetch(input, { ...init, signal: controller.signal })
@@ -141,17 +142,18 @@ async function requestFormData<TResponse>(
   path: string,
   formData: FormData,
   init: Omit<RequestInit, 'body'> = {},
+  timeoutMs = TIMEOUT_MS,
 ): Promise<TResponse> {
   const url = withBaseUrl(path)
 
   const authHeader = await getAuthHeader()
   let res: Response
   try {
-    res = await fetchWithTimeout(url, { ...init, body: formData, headers: authHeader })
+    res = await fetchWithTimeout(url, { ...init, body: formData, headers: authHeader }, timeoutMs)
   } catch (err) {
     const message =
       err instanceof DOMException && err.name === 'AbortError'
-        ? `Request timed out after ${TIMEOUT_MS}ms`
+        ? `Request timed out after ${timeoutMs}ms`
         : 'Network error'
     throw new ApiError(message, { status: 0, url, details: err })
   }
@@ -212,7 +214,7 @@ export async function rankPhotos(photos: File[]): Promise<RankPhotosResponse> {
 
   return await requestFormData<RankPhotosResponse>('/api/profile/rank-photos', formData, {
     method: 'POST',
-  })
+  }, PHOTO_TIMEOUT_MS)
 }
 
 export async function generateOpeners(req: GenerateOpenersRequest): Promise<GenerateOpenersResponse> {
