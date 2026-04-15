@@ -40,6 +40,7 @@ const vibeOptions: { value: VibeType; label: string; icon: typeof Smile; bg: str
 
 export function UploadPage({ formData, setFormData, onSubmit, onLogout }: UploadPageProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [isRankingPhotos, setIsRankingPhotos] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [activeTab, setActiveTab] = useState<"optimize" | "saves">("optimize")
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -63,9 +64,10 @@ export function UploadPage({ formData, setFormData, onSubmit, onLogout }: Upload
   }
 
   const handleSubmit = async () => {
+    const files = formData.photos.map(p => p.file)
     setIsLoading(true)
+    setIsRankingPhotos(files.length >= 2)
     try {
-      const files = formData.photos.map(p => p.file)
       const [bioRes, rankRes] = await Promise.all([
         rewriteBio({ bio: formData.bio, tone: vibeToTone(formData.vibe) }),
         files.length >= 2
@@ -77,6 +79,7 @@ export function UploadPage({ formData, setFormData, onSubmit, onLogout }: Upload
       const message = err instanceof Error ? err.message : "Something went wrong"
       toast.error(message)
       setIsLoading(false)
+      setIsRankingPhotos(false)
     }
   }
 
@@ -346,8 +349,13 @@ export function UploadPage({ formData, setFormData, onSubmit, onLogout }: Upload
         </button>
         
         {isLoading && (
-          <div className="mt-8 flex justify-center animate-in fade-in duration-500">
+          <div className="mt-8 flex flex-col items-center gap-4 animate-in fade-in duration-500">
             <LoadingBot />
+            {isRankingPhotos && (
+              <p className="font-mono text-sm text-muted-text">
+                Analyzing your photos with AI, this can take up to 60 seconds ✨
+              </p>
+            )}
           </div>
         )}
       </div>
